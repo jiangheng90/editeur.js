@@ -1,0 +1,13 @@
+.toolbar {
+  text-align: left;
+  width: 100%;
+  margin: 0 0 20px 0;
+}
+
+.state-button {
+  margin-left: 20px;
+  background-color: white;
+  border: none;
+  outline: none;
+  cursor: Pointer;
+}

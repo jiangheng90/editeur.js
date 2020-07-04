@@ -1,9 +1,11 @@
 {
-  "name": "editeur.js",
-  "version": "0.0.1",
+  "name": "editeurjs",
+  "version": "0.0.1-r6",
   "description": "a rich text js",
-  "main": "editor",
+  "main": "dist/main.js",
   "scripts": {
+    "dev": "webpack-dev-server --open --config ./webpack/webpack.dev.js",
+    "prod": "webpack --config ./webpack/webpack.prod.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -11,5 +13,22 @@
     "richtext"
   ],
   "author": "jiangheng90@live.com",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer": "^9.8.4",
+    "css-loader": "^3.6.0",
+    "node-sass": "^4.14.1",
+    "postcss-cssnext": "^3.1.0",
+    "postcss-loader": "^3.0.0",
+    "sass-loader": "^9.0.0",
+    "style-loader": "^1.2.1",
+    "ts-loader": "^7.0.5",
+    "typescript": "^3.9.5",
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0",
+    "webpack-merge": "^4.2.2"
+  },
+  "dependencies": {}
 }

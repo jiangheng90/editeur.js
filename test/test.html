@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<head>
+  <script src="../dist/main.js"></script>
+  <link rel="stylesheet" href="./test.css" type="text/css">
+</head>
+<body>
+  <div class="toolbar">
+    <label>
+      字号
+      <select id="font-size-selector" onchange="selectFontSize(this.options[this.options.selectedIndex].value)">
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12" selected>12</option>
+        <option value="14">14</option>
+        <option value="16">16</option>
+        <option value="18">18</option>
+        <option value="20">20</option>
+        <option value="22">22</option>
+        <option value="24">24</option>
+        <option value="30">30</option>
+        <option value="36">36</option>
+      </select>
+    </label>
+    <label style="margin-left: 20px">
+      颜色
+      <select id="font-color-selector" onchange="selectFontColor(this.options[this.options.selectedIndex].value)">
+        <option value="#fffbe6" style="background-color: #fffbe6;">#fffbe6</option>
+        <option value="#fff1b8" style="background-color: #fff1b8;">#fff1b8</option>
+        <option value="#ffe58f" style="background-color: #ffe58f;">#ffe58f</option>
+        <option value="#ffd666" style="background-color: #ffd666;">#ffd666</option>
+        <option value="#ffc53d" style="background-color: #ffc53d;">#ffc53d</option>
+        <option value="#faad14" style="background-color: #faad14;">#faad14</option>
+        <option value="#d48806" style="background-color: #d48806;">#d48806</option>
+        <option value="#ad6800" style="background-color: #ad6800;">#ad6800</option>
+        <option value="#874d00" style="background-color: #874d00;">#874d00</option>
+        <option value="#613400" style="background-color: #613400;">#613400</option>
+      </select>
+    </label>
+    <label style="margin-left: 20px">
+      背景颜色
+      <select id="background-color-selector" onchange="selectBackgroundColor(this.options[this.options.selectedIndex].value)">
+        <option value="#e6f7ff" style="background-color: #e6f7ff;">#e6f7ff</option>
+        <option value="#bae7ff" style="background-color: #bae7ff;">#bae7ff</option>
+        <option value="#91d5ff" style="background-color: #91d5ff;">#91d5ff</option>
+        <option value="#69c0ff" style="background-color: #69c0ff;">#69c0ff</option>
+        <option value="#40a9ff" style="background-color: #40a9ff;">#40a9ff</option>
+        <option value="#1890ff" style="background-color: #1890ff;">#1890ff</option>
+        <option value="#096dd9" style="background-color: #096dd9;">#096dd9</option>
+        <option value="#0050b3" style="background-color: #0050b3;">#0050b3</option>
+        <option value="#003a8c" style="background-color: #003a8c;">#003a8c</option>
+      </select>
+    </label>
+    <button onclick="setFontBold()" id="bold" class="state-button"">
+      <strong>
+        B
+      </strong>
+    </button>
+    <button onclick="setFontItalic()" id="italic" class="state-button"">
+      <em>
+        I
+      </em>
+    </button>
+    <button onclick="setFontDelete()" id="delete" class="state-button">
+      <s>
+        del
+      </s>
+    </button>
+    <button onclick="setFontUnderScore()" id="underScore" class="state-button">
+      <u>
+        U
+      </u>
+    </button>
+    <label style="margin-left: 20px;">
+      无序列表
+      <select id="no-sort-list-style-selector" onchange="setNoSortList(this.options[this.options.selectedIndex].value)">
+        <option value="none">
+          none
+        </option>
+        <option value="circle" selected>
+          circle
+        </option>
+        <option value="square" selected>
+          square
+        </option>
+      </select>
+    </label>
+    <label style="margin-left: 20px;">
+      有序列表
+      <select id="no-sort-list-style-selector" onchange="setSortList(this.options[this.options.selectedIndex].value)">
+        <option value="none">
+          none
+        </option>
+        <option value="decimal">
+          1,2,3
+        </option>
+        <option value="lower-roman">
+          i,ii,iii
+        </option>
+        <option value="lower-latin">
+          a,b,c
+        </option>
+      </select>
+    </label>
+  </div>
+  <div class="content" id="content1" onblur="">123</div>
+</body>
+<script>
+  const target = document.getElementById('content1')
+  // editeur.addChild(target)
+  // // editeur.addChild(target)
+  const style1 = new editeur.TextNodeStyle()
+  style1.color = '#ff0000'
+  const style2 = new editeur.TextNodeStyle()
+  style2.fontSize = '22pt'
+  style2.backgroundColor = '#a6a6a6'
+  const l0n0 = new editeur.TextNode('span', '这是一段测试文本')
+  const l0n1 = new editeur.TextNode('span', '222222222222')
+  const l0n2 = new editeur.TextNode('span', '3333333333333333333333333')
+  const line0 = new editeur.LineNode()
+  line0.PushChildren([l0n0, l0n1, l0n2])
+  // this.contents.PushChild(line0)
+  // line0.PushChildren([l0n0, l0n1, l0n2])
+
+  const l1n0 = new editeur.TextNode('span', '44444444444444444444444444')
+  const l1n1 = new editeur.TextNode('span', '55555555555555555555555555')
+  const l1n2 = new editeur.TextNode('span', '66666666666666666666666666')
+  const line1 = new editeur.LineNode()
+  line1.PushChildren([l1n0, l1n1, l1n2])
+
+  const l2n0 = new editeur.TextNode('span', '8888888')
+  const l2n1 = new editeur.TextNode('em', '9999999999999')
+  l2n1.bold = false
+  l2n1.italic = true
+  l2n1.underScore = true
+  l2n1.delete = true
+  l2n1.style = style2
+  const l2n2 = new editeur.TextNode('em', '000000000')
+  l2n2.bold = false
+  l2n2.italic = true
+  l2n2.underScore = true
+  l2n2.delete = true
+  l2n2.style = style2
+  const l2n4 = new editeur.TextNode('span', '222')
+  const line2 = new editeur.LineNode()
+  line2.PushChildren([l2n0, l2n1, l2n2, l2n4])
+
+  const l3n0 = new editeur.TextNode('span', '66666666666')
+  const line3 = new editeur.LineNode()
+  line3.PushChild(l3n0)
+
+  const li0n0 = new editeur.TextNode('span', '项目1')
+  const li0 = new editeur.LineNode('p')
+  li0.PushChild(li0n0)
+
+  const li1n0 = new editeur.TextNode('span', '项目2')
+  const li1 = new editeur.LineNode('p')
+  li1.PushChild(li1n0)
+
+  const li2n0 = new editeur.TextNode('span', '项目3')
+  const li2 = new editeur.LineNode('p')
+  li2.PushChild(li2n0)
+
+  const li0c = new editeur.ListItemNode(li0)
+  const li1c = new editeur.ListItemNode(li1)
+  const li2c = new editeur.ListItemNode(li2)
+
+  const line4 = new editeur.LineNode('ul')
+  line4.PushChildren([li0c, li1c, li2c])
+
+  let content = new editeur.ContentsNode()
+  content.PushChildren([line0, line4, line1, line2, line3])
+  const lin1FirstChild = content.children[0].children[0].child
+  const lin1MidChild = content.children[0].children[1].child
+  if (lin1FirstChild && lin1FirstChild instanceof editeur.TextNode) {
+    lin1FirstChild.style = style1
+  }
+  if (lin1MidChild && lin1MidChild instanceof editeur.TextNode) {
+    lin1MidChild.style = style2
+  }
+
+  const editor = new editeur.Editor(target, content)
+
+  window.addEventListener('mouseup', () => {
+    const bold = document.getElementById('bold')
+    const italic = document.getElementById('italic')
+    const del = document.getElementById('delete')
+    const underScore = document.getElementById('underScore')
+    if (bold && italic && del && underScore) {
+      if (new editeur.Selection().isSelection()) {
+        bold.style.color = editor.textState.strong ? 'rgb(0, 0, 0)' : 'rgb(0, 0, 255)'
+        italic.style.color = editor.textState.em ? 'rgb(0, 0, 0)' : 'rgb(0, 0, 255)'
+        del.style.color = editor.textState.s ? 'rgb(0, 0, 0)' : 'rgb(0, 0, 255)'
+        underScore.style.color = editor.textState.u ? 'rgb(0, 0, 0)' : 'rgb(0, 0, 255)'
+      } else {
+        bold.style.color = 'rgb(0, 0, 0)'
+        italic.style.color = 'rgb(0, 0, 0)'
+        del.style.color = 'rgb(0, 0, 0)'
+        underScore.style.color = 'rgb(0, 0, 0)'
+      }
+    }
+  })
+
+  window.addEventListener('blur', () => {
+    console.log('blur')
+  })
+
+  function selectFontSize (val) {
+    editor.SetFontSize(val, 1)
+  }
+
+  function selectFontColor (val) {
+    editor.SetFontColor(val)
+  }
+
+  function selectBackgroundColor (val) {
+    editor.SetBackgroundColor(val)
+  }
+
+  function setFontBold () {
+    editor.SetBold()
+    const bold = document.getElementById('bold')
+    if (bold) {
+      bold.style.color =
+        bold.style.color === 'rgb(0, 0, 255)'
+          ? 'rgb(0, 0, 0)'
+          : 'rgb(0, 0, 255)'
+    }
+  }
+
+  function setFontItalic () {
+    editor.SetItalic()
+    const italic = document.getElementById('italic')
+    if (italic) {
+      italic.style.color =
+      italic.style.color === 'rgb(0, 0, 255)'
+          ? 'rgb(0, 0, 0)'
+          : 'rgb(0, 0, 255)'
+    }
+  }
+
+  function setFontDelete () {
+    editor.SetDelete()
+    const del = document.getElementById('delete')
+    if (del) {
+      del.style.color =
+      del.style.color === 'rgb(0, 0, 255)'
+          ? 'rgb(0, 0, 0)'
+          : 'rgb(0, 0, 255)'
+    }
+  }
+
+  function setFontUnderScore () {
+    editor.SetUnderScore()
+    const underScore = document.getElementById('underScore')
+    if (underScore) {
+      underScore.style.color =
+      underScore.style.color === 'rgb(0, 0, 255)'
+          ? 'rgb(0, 0, 0)'
+          : 'rgb(0, 0, 255)'
+    }
+  }
+
+  function setNoSortList (val) {
+    let param
+    const symbol = val === 'none' ? undefined : val
+    if (symbol) {
+      param = {
+        list: true,
+        type: 0,
+        symbol: symbol
+      }
+    } else {
+      param = {
+        list: false
+      }
+    }
+    editor.SetList(param)
+  }
+
+  function setSortList (val) {
+    let param
+    const symbol = val === 'none' ? undefined : val
+    if (symbol) {
+      param = {
+        list: true,
+        type: 1,
+        symbol: symbol
+      }
+    } else {
+      param = {
+        list: false
+      }
+    }
+    editor.SetList(param)
+  }
+</script>
