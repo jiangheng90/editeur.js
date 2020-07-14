@@ -73,7 +73,12 @@ const InitSelectionNode = (
         }
         return new SelectionNode(id, offset)
       } else {
-        id = node.parentElement.childNodes[offset].id
+        if (node.parentElement.childNodes[offset]?.id) {
+          id = node.parentElement.childNodes[offset].id
+        } else {
+          id = DOM.GetNodeId(0, 0)
+        }
+        return new SelectionNode(id, offset)
       }
     }
   }
