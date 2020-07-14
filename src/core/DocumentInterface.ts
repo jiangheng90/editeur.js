@@ -5,13 +5,17 @@
 // import { ListStateInterface } from '@/components/editor/types/ListItemNode'
 // import { ListType } from './ListItemNode'
 // import LineComponent from '@/components/editor/LineComponent'
-import { TextNode, TextNodeStyle } from '../nodes/TextNode'
-import { Selection, Position, SetSelection } from './Selection'
+import { ContentsNode } from '../nodes/ContentsNode'
+import { LineNode, LineContent, LineStyle, LineFormate } from '../nodes/LineNode'
+import { TextNode, TextNodeStyle ,HyperLinkProp } from '../nodes/TextNode'
+import { Selection, Position, SetSelection, SetCursorPosition } from './Selection'
 import * as Convert from './Convert'
 import { TextNodeStateInterface } from '../types/TextNode'
 import { ListStateInterface } from '../types/ListItemNode'
 import { ListType, ListItemNode } from '../nodes/ListItemNode'
-import { ContentsNode, LineNode, LineContent, Editor } from '..'
+import { Editor } from '../core/Editor'
+import { EmbedNode } from '../nodes/EmbedNode'
+
 
 
 export const DocumentToString = (ele: any): string => {
@@ -89,6 +93,12 @@ export const HasStyle = (target: any) => {
   }
 }
 
+export const HasHerf = (target: HTMLElement) => {
+  // @ts-ignore
+  const herf = target.herf
+  return herf !== undefined
+}
+
 export const GetStyle = (target: any) => {
   const style = new TextNodeStyle()
   if (target.style.fontSize) {
@@ -100,8 +110,8 @@ export const GetStyle = (target: any) => {
   if (target.style.color) {
     style.color = target.style.color
   }
-  if (target.style.font) {
-    style.font = target.style.font
+  if (target.style.fontFamilty) {
+    style.fontFamily = target.style.fontFamily
   }
   if (target.style.backgroundColor) {
     style.backgroundColor = target.style.backgroundColor
@@ -110,14 +120,15 @@ export const GetStyle = (target: any) => {
 }
 
 export const SetNodeStyle = (
-  ele: any,
+  ele: HTMLElement,
   style: TextNodeStyle
 ): any => {
   if (ele) {
     for (const key in style) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
-      ele.style[key] = style[key]
+      if (key !== 'GetCssText') {
+        // @ts-ignore
+        ele.style[key] = style[key]
+      }
     }
   }
 }
@@ -130,7 +141,6 @@ export const CloneNewElementByStyle = (
   if (parentEle && targetEle) {
     const newEle = document.createElement(targetEle.tag)
     for (const key in style) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
       newEle.style[key] = style[key]
     }
@@ -155,24 +165,20 @@ export const CloneNewTextElement = (
   while (ele && ele.tagName) {
     for (const t in tags) {
       if (ele.tagName.toLowerCase() === t.toString()) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         tags[t] = true
       }
     }
     ele = ele.firstChild
   }
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore
   tags[tag] = value
   const cEle = document.createElement('span')
   let oEle = cEle
   for (const t in tags) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     if (tags[t]) {
       oEle.appendChild(document.createElement(t.toString()))
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
       oEle = oEle.firstChild
     }
@@ -198,7 +204,15 @@ export const CloneNewTextElement = (
     // newEle.appendChild(document.getElementById('span'))
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  if (targetEle.tagName.toLowerCase() === 'a') {
+    const n = document.createElement('a')
+    const cn = newEle.cloneNode(true)
+    n.appendChild(cn)
+    newEle = n
+    //@ts-ignore
+    SetHyperLinkAttribute(newEle, targetEle.href)
+  }
+
   // @ts-ignore
   if (newEle.style !== undefined) {
     for (const s in style) {
@@ -207,6 +221,7 @@ export const CloneNewTextElement = (
       newEle.style[s] = style[s]
     }
   }
+
   return newEle
 }
 
@@ -337,10 +352,14 @@ export const SplitNode = (
       ne.innerText = nVal
     }
 
-    // @ts-ignore
-    const style = editor.VirtualDom.children[l].children[n].child?.style
+    const style = ele.style.cssText
     if (style) {
-      SetNodeStyle(ne, style)
+      ne.style.cssText = style
+    }
+    // @ts-ignore
+    if (ele.href) {
+      // @ts-ignore
+      SetHyperLinkAttribute(ne, ele.href)
     }
     ele.insertAdjacentElement('afterend', ne)
   }
@@ -359,6 +378,7 @@ export const SplitSingleNode = (
   if (ele) {
     const me = document.createElement(ele.tagName)
     const ne = document.createElement(ele.tagName)
+
     const pVal = ele.innerText.slice(0, so)
     const mVal = ele.innerText.slice(so, eo)
     const nVal = ele.innerText.slice(eo)
@@ -398,11 +418,22 @@ export const SplitSingleNode = (
     }
 
     // @ts-ignore
-    const style = editor.VirtualDom.children[l].children[n].child?.style
+    const style = ele.style.cssText
     if (style) {
-      SetNodeStyle(me, style)
-      SetNodeStyle(ne, style)
+      me.style.cssText = style
+      ne.style.cssText = style
+      // SetNodeStyle(me, style)
+      // SetNodeStyle(ne, style)
     }
+
+    // @ts-ignore
+    if (ele.href) {
+      // @ts-ignore
+      SetHyperLinkAttribute(me, ele.href)
+      // @ts-ignore
+      SetHyperLinkAttribute(ne, ele.href)
+    }
+
     ele.insertAdjacentElement('afterend', me)
     me.insertAdjacentElement('afterend', ne)
   }
@@ -551,8 +582,8 @@ export const MergeNodeInContent = (
   })
 }
 
-export const UpdateInLine = (
-  param: TextNodeStyle|string,
+export const UpdateTextNode = (
+  param: TextNodeStyle|HyperLinkProp|EmbedNode|string,
   editor: Editor,
   parent: any,
   sn: number,
@@ -591,6 +622,10 @@ export const UpdateInLine = (
           editor.Update(editor.el)
         }, 0);
       }
+    } else if (param instanceof HyperLinkProp) {
+      const parentEle = parent
+      const targetEle = parent.childNodes[i]
+      SetHyperLink(parentEle, targetEle, param.href)
     }
   }
 }
@@ -598,7 +633,7 @@ export const UpdateInLine = (
 export const UpdateTextDOM = (
   editor: Editor,
   select: Selection,
-  param: TextNodeStyle|string
+  param: TextNodeStyle|HyperLinkProp|EmbedNode|string
 ): any => {
   // type 0 is update style, 1 is update whole node
   if (select.isSelection()) {
@@ -659,22 +694,22 @@ export const UpdateTextDOM = (
               if (i === sn) {
                 if (sp !== Position.LineEnd) {
                   if (sp === Position.NodeEnd) {
-                    UpdateInLine(param, editor, parent, scn + 1)
+                    UpdateTextNode(param, editor, parent, scn + 1)
                   } else {
-                    UpdateInLine(param, editor, parent, scn)
+                    UpdateTextNode(param, editor, parent, scn)
                   }
                 }
               } else {
-                UpdateInLine(param, editor, parent, 0)
+                UpdateTextNode(param, editor, parent, 0)
               }
             }
           } else {
             const parent = editor.el.childNodes[sl]
             if (sp !== Position.LineEnd) {
               if (sp === Position.NodeEnd) {
-                UpdateInLine(param, editor, parent, scn + 1)
+                UpdateTextNode(param, editor, parent, scn + 1)
               } else {
-                UpdateInLine(param, editor, parent, scn)
+                UpdateTextNode(param, editor, parent, scn)
               }
             }
           }
@@ -683,14 +718,14 @@ export const UpdateTextDOM = (
             for (let i = sl + 1; i < el; i++) {
               // @ts-ignore
               const tag = editor.el.childNodes[i].tagName.toLowerCase()
-              if (tag === 'p') {
+              if (tag === 'p' || tag === 'div') {
                 const parent = editor.el.childNodes[i]
-                UpdateInLine(param, editor, parent, 0)
+                UpdateTextNode(param, editor, parent, 0)
               } else if (tag === 'ul' || tag === 'ol') {
                 const listLen = editor.el.childNodes[i].childNodes.length
                 for (let j = 0; j < listLen; j++) {
                   const parent = editor.el.childNodes[i].childNodes[j]
-                  UpdateInLine(param, editor, parent, 0)
+                  UpdateTextNode(param, editor, parent, 0)
                 }
               }
             }
@@ -701,24 +736,24 @@ export const UpdateTextDOM = (
               const parent = editor.el.childNodes[el].childNodes[i]
               if (i === en) {
                 if (ep !== Position.LineStart) {
-                  console.log('e', 'is-node-start', ep === Position.NodeStart)
+                  // console.log('e', 'is-node-start', ep === Position.NodeStart)
                   if (ep === Position.NodeStart) {
-                    UpdateInLine(param, editor, parent, 0, ecn - 1)
+                    UpdateTextNode(param, editor, parent, 0, ecn - 1)
                   } else {
-                    UpdateInLine(param, editor, parent, 0, ecn)
+                    UpdateTextNode(param, editor, parent, 0, ecn)
                   }
                 }
               } else {
-                UpdateInLine(param, editor, parent, 0)
+                UpdateTextNode(param, editor, parent, 0)
               }
             }
           } else {
             const parent = editor.el.childNodes[el]
             if (ep !== Position.LineStart) {
               if (ep === Position.NodeStart) {
-                UpdateInLine(param, editor, parent, 0, ecn - 1)
+                UpdateTextNode(param, editor, parent, 0, ecn - 1)
               } else {
-                UpdateInLine(param, editor, parent, 0, ecn)
+                UpdateTextNode(param, editor, parent, 0, ecn)
               }
             }
           }
@@ -809,7 +844,7 @@ export const UpdateTextDOM = (
             const oecn = ecn
             // @ts-ignore
             const tag = editor.el.childNodes[sl].tagName.toLowerCase()
-            if (tag === 'p') {
+            if (tag === 'p' || tag === 'div') {
               const parent = editor.el.childNodes[sl]
               if (sp === Position.NodeEnd) {
                 scn++
@@ -817,7 +852,7 @@ export const UpdateTextDOM = (
               if (ep === Position.NodeStart) {
                 ecn--
               }
-              UpdateInLine(param, editor, parent, scn, ecn)
+              UpdateTextNode(param, editor, parent, scn, ecn)
             } else if (tag === 'ul' || tag === 'ol') {
               for (let i = sn; i <= en; i++) {
                 const parent = editor.el.childNodes[sl].childNodes[i]
@@ -826,7 +861,7 @@ export const UpdateTextDOM = (
                     if (sp === Position.NodeEnd) {
                       scn++
                     }
-                    UpdateInLine(param, editor, parent, scn)
+                    UpdateTextNode(param, editor, parent, scn)
                   }
                 } else if (i === en) {
                   if (ep !== Position.LineStart) {
@@ -834,10 +869,10 @@ export const UpdateTextDOM = (
                       ecn--
                     }
                     // console.log(oecn)
-                    UpdateInLine(param, editor, parent, 0, ecn)
+                    UpdateTextNode(param, editor, parent, 0, ecn)
                   }
                 } else {
-                  UpdateInLine(param, editor, parent, 0)
+                  UpdateTextNode(param, editor, parent, 0)
                 }
               }
             }
@@ -902,7 +937,7 @@ export const UpdateTextDOM = (
               const oecn = ecn
               // @ts-ignore
               const tag = editor.el.childNodes[sl].tagName.toLowerCase()
-              if (tag === 'p') {
+              if (tag === 'p' || tag === 'div') {
                 const parent = editor.el.childNodes[sl]
                 if (sp === Position.NodeEnd) {
                   scn++
@@ -910,7 +945,7 @@ export const UpdateTextDOM = (
                 if (ep === Position.NodeStart) {
                   ecn--
                 }
-                UpdateInLine(param, editor, parent, scn, ecn)
+                UpdateTextNode(param, editor, parent, scn, ecn)
               } else if (tag === 'ul' || tag === 'ol') {
                 for (let i = sn; i <= en; i++) {
                   const parent = editor.el.childNodes[sl].childNodes[i]
@@ -920,7 +955,7 @@ export const UpdateTextDOM = (
                   if (ep === Position.NodeStart) {
                     ecn--
                   }
-                  UpdateInLine(param, editor, parent, scn, ecn)
+                  UpdateTextNode(param, editor, parent, scn, ecn)
                 }
               }
               if (ssn !== undefined) {
@@ -937,7 +972,7 @@ export const UpdateTextDOM = (
               const oecn = ecn
               // @ts-ignore
               const tag = editor.el.childNodes[sl].tagName.toLowerCase()
-              if (tag === 'p') {
+              if (tag === 'p' || tag === 'div') {
                 const parent = editor.el.childNodes[sl]
                 if (sp === Position.NodeEnd) {
                   scn++
@@ -945,7 +980,7 @@ export const UpdateTextDOM = (
                 if (ep === Position.NodeStart) {
                   ecn--
                 }
-                UpdateInLine(param, editor, parent, scn, ecn)
+                UpdateTextNode(param, editor, parent, scn, ecn)
               } else if (tag === 'ul' || tag === 'ol') {
                 for (let i = sn; i <= en; i++) {
                   const parent = editor.el.childNodes[sl].childNodes[i]
@@ -955,7 +990,7 @@ export const UpdateTextDOM = (
                   if (ep === Position.NodeStart) {
                     ecn--
                   }
-                  UpdateInLine(param, editor, parent, scn, ecn)
+                  UpdateTextNode(param, editor, parent, scn, ecn)
                 }
               }
               if (ssn !== undefined) {
@@ -965,6 +1000,135 @@ export const UpdateTextDOM = (
               }
             }, 0);
           }
+        }
+      }
+    }
+  } else {
+    const l = select.anchor.lineIndex
+    const n = select.anchor.nodeIndex
+    const sn = select.anchor.subNodeIndex
+    const o = select.anchor.offset
+    const p = Selection.GetPosition(select.anchor)
+    if (l !== undefined &&
+      n !== undefined &&
+      o !== undefined &&
+      p !== undefined
+    ) {
+      if (p === Position.InNode) {
+        SplitNode(editor, l, n, sn, o)
+      }
+      const ele = GetDOM(GetNodeId(l, n, sn))
+      let target: HTMLElement
+      if (param instanceof HyperLinkProp) {
+        target = document.createElement('a')
+        target.innerText = param.label
+        target.style.cssText = ele.style.cssText
+        target.className = ele.className
+        SetHyperLinkAttribute(target, param.href)
+      } else if (param instanceof TextNodeStyle) {
+        target = document.createElement('span')
+        target.innerHTML = '&#65279;'
+        target.style.cssText = param.GetCssText()
+      } else if (typeof param === 'string') {
+        target = document.createElement(param)
+        target.innerHTML = '&#65279;'
+        target.style.cssText = ele.style.cssText
+      } else if (param instanceof EmbedNode) {
+        target = document.createElement(param.tag)
+        // @ts-ignore
+        target.src = param.src
+        target.style.cssText = param.style.GetCssText()
+      }
+      if (ele && target) {
+        if (p === Position.NodeStart || p === Position.LineStart) {
+          ele.insertAdjacentElement('beforebegin', target)
+        } else {
+          ele.insertAdjacentElement('afterend', target)
+        }
+        editor.Update(editor.el)
+      }
+      SetCursorPosition(target)
+    }
+  }
+}
+
+export const GetInnerNode = (
+  ele: Node
+): Node => {
+  let target = ele
+  while (target) {
+    target = target.firstChild
+  }
+  return target
+}
+
+export const UpdateLineDOM = (
+  editor: Editor,
+  select: Selection,
+  param: LineStyle|LineFormate
+): any => {
+  let sl = select.start?.lineIndex
+  const sp = select.sp
+  let el = select.end?.lineIndex
+  const ep = select.ep
+  if (sl !== undefined &&
+    el !== undefined
+  ) {
+    if (sp === Position.LineEnd &&
+      !IsListNode(editor.el.childNodes[sl].childNodes[0])
+    ) {
+      sl++
+    }
+    if (ep === Position.LineStart &&
+      !IsListNode(editor.el.childNodes[el].childNodes[0])
+    ) {
+      el--
+    }
+    if (param instanceof LineStyle) {
+      for (let i = sl; i <= el; i++) {
+        for (const key in param) {
+          // @ts-ignore
+          editor.el.childNodes[i].style[key] = param[key]
+        }
+      }
+    } else if (param instanceof LineFormate) {
+      for (let i = sl; i <= el; i++) {
+        const newChild = document.createElement(param.tag)
+        const oldChild = editor.el.childNodes[i]
+        if (oldChild instanceof HTMLElement) {
+          newChild.innerHTML =oldChild.innerHTML
+          if (oldChild.style.cssText) {
+            newChild.style.cssText = oldChild.style.cssText
+          }
+          editor.el.replaceChild(newChild, oldChild)
+        }
+        for (const key in param.style) {
+          // @ts-ignore
+          editor.el.childNodes[i].style[key] = param.style[key]
+        }
+      }
+    }
+  } else {
+    const l = select?.anchor?.lineIndex
+    if (l !== undefined) {
+      if (param instanceof LineStyle) {
+        for (const key in param) {
+          // @ts-ignore
+          editor.el.childNodes[l].style[key] = param[key]
+        }
+      } else if (param instanceof LineFormate) {
+        const newChild = document.createElement(param.tag)
+        const oldChild = editor.el.childNodes[l]
+        if (oldChild instanceof HTMLElement) {
+          newChild.innerHTML =oldChild.innerHTML
+          if (oldChild.style.cssText) {
+            newChild.style.cssText = oldChild.style.cssText
+          }
+          editor.el.replaceChild(newChild, oldChild)
+        }
+        for (const key in param.style) {
+          // @ts-ignore
+          editor.el.childNodes[l].style[key] = param.style[key]
         }
       }
     }
@@ -1165,6 +1329,20 @@ export const GetTextNodeState = (
         editor.textState[key] = !editor.textState[key]
       }
     }
+  } else {
+    const l = select.anchor?.lineIndex
+    const n = select.anchor?.nodeIndex
+    const sn = select.anchor?.subNodeIndex
+    if (l !== undefined && n !== undefined) {
+      const ele = GetDOM(GetNodeId(l, n, sn))
+      if (ele) {
+        editor.textState = NodeState(ele, editor)
+        for (const key in editor.textState) {
+          // @ts-ignore
+          editor.textState[key] = !editor.textState[key]
+        }
+      }
+    }
   }
 }
 
@@ -1213,6 +1391,76 @@ export const GetListState = (
         }
         i++
       }
+    }
+  } else {
+    let l = select.anchor?.lineIndex
+    if (l !== undefined) {
+      // @ts-ignore
+      const tag = editor.el.childNodes[l].tagName.toLowerCase()
+      if (tag === 'ul' || tag === 'ol') {
+        editor.listState = {list: true}
+      } else {
+        editor.listState = {list: false}
+      }
+    }
+  }
+}
+
+export const GetLineStyle = (
+  editor: Editor,
+  select: Selection
+): any => {
+  let sl = select.start?.lineIndex
+  const sp = select.sp
+  let el = select.end?.lineIndex
+  const ep = select.ep
+  if (sl !== undefined && el !== undefined) {
+    const lineStyles: LineStyle[] = []
+    if (sp === Position.LineEnd &&
+      !IsListNode(editor.el.childNodes[sl].childNodes[0])
+    ) {
+      sl++
+    }
+    if (ep === Position.LineStart &&
+      !IsListNode(editor.el.childNodes[el].childNodes[0])
+    ) {
+      el--
+    }
+    for (let i = sl; i <= el; i++) {
+      // @ts-ignore
+      const align = editor.el.childNodes[i].style['text-align']
+      const lineStyle = new LineStyle()
+      lineStyle.SetTextAlign(align)
+      lineStyles.push(lineStyle)
+    }
+    if (lineStyles.length > 1) {
+      let i = 0
+      editor.lineStyle = new LineStyle()
+      while (lineStyles[i]) {
+        if (lineStyles[i].GetCssText() === '') {
+          editor.lineStyle = new LineStyle()
+          break
+        } else {
+          if (i > 0) {
+            const pStyle = lineStyles[i - 1]
+            const style = lineStyles[i]
+            if (pStyle.GetTextAlign() === style.GetTextAlign()) {
+              editor.lineStyle.SetTextAlign(style.GetTextAlign())
+            }
+          }
+        }
+      }
+    } else {
+      editor.lineStyle = lineStyles[0]
+    }
+  } else {
+    const l = select.anchor?.lineIndex
+    if (l !== undefined) {
+      // @ts-ignore
+      const align = editor.el.childNodes[l].style['text-align']
+      const style = new LineStyle()
+      style.SetTextAlign(align)
+      editor.lineStyle = style
     }
   }
 }
@@ -1642,10 +1890,7 @@ export const UpdateListDOM = (
   RemoveEmptyLine(editor.el)
   setTimeout(() => {
     editor.Update(editor.el)
-  }, 0);
-  // vm.$nextTick(() => {
-  //   vm.Update(vm.$el)
-  // })
+  }, 0)
 }
 
 export const RenderTextNode = (
@@ -1658,9 +1903,77 @@ export const RenderTextNode = (
   ele.id = GetNodeId(l, n, sn)
   ele.innerHTML = SetInnerHTML(node, l, n, sn)
   if (node.style !== undefined) {
-    ele.style.cssText = node.style.GetStyle()
+    ele.style.cssText = node.style.GetCssText()
   }
   return ele
+}
+
+export const Redirect = (
+  e: Event
+) => {
+  let target = e.target
+  // @ts-ignore
+  while(target.href === undefined) {
+    // @ts-ignore
+    target = target.parentElement
+  }
+  // @ts-ignore
+  if (target.href) {
+    // @ts-ignore
+    window.open(target.href)
+  }
+}
+
+export const SetHyperLinkAttribute = (
+  ele: HTMLElement,
+  href: string|undefined
+): any => {
+  if (href) {
+    ele.setAttribute('href', href)
+
+    ele.style.cursor = 'Pointer'
+    // @ts-ignore
+    ele.target = '_blank'
+    // @ts-ignore
+    ele.rel = 'noopener noreferrer nofollow'
+
+    ele.onclick = Redirect
+  }
+}
+
+export const SetHyperLink = (
+  parent: HTMLElement,
+  ele: HTMLElement,
+  href: string
+): any => {
+  if (ele) {
+    const tag = ele.tagName.toLowerCase()
+    if (tag !== 'a') {
+      let hyperLink
+      if (tag === 'strong' ||
+        tag === 'em' ||
+        tag === 's' ||
+        tag === 'u'
+      ) {
+        hyperLink = document.createElement('a')
+        hyperLink.style.cssText = ele.style.cssText
+        ele.style.cssText = ''
+        const cloneEle = ele.cloneNode(true)
+        hyperLink.appendChild(cloneEle)
+        SetHyperLinkAttribute(hyperLink, href)
+      } else if (
+        tag === 'span'
+      ) {
+        hyperLink = document.createElement('a')
+        hyperLink.style.cssText = ele.style.cssText
+        hyperLink.innerHTML = ele.innerHTML
+        SetHyperLinkAttribute(hyperLink, href)
+      }
+      if (hyperLink) {
+        parent.replaceChild(hyperLink, ele)
+      }
+    }
+  }
 }
 
 export const Render = (c: ContentsNode): HTMLElement[] => {
@@ -1672,6 +1985,9 @@ export const Render = (c: ContentsNode): HTMLElement[] => {
   ) => {
     const newLine = document.createElement(line.tag)
     newLine.id = GetLineId(l)
+    if (line.style.GetCssText().length > 0) {
+      newLine.style.cssText = line.style.GetCssText()
+    }
     newLine.className = 'editor-row hide-outline'
     line.children.map((
       lc: LineContent,
@@ -1681,23 +1997,31 @@ export const Render = (c: ContentsNode): HTMLElement[] => {
       const cEle = document.createElement(child.tag)
       cEle.id = GetNodeId(l, n)
       if (child instanceof TextNode) {
+        SetHyperLinkAttribute(cEle, child?.href)
         cEle.innerHTML = SetInnerHTML(child, l, n)
         if (child.style !== undefined) {
-          cEle.style.cssText = child.style.GetStyle()
+          cEle.style.cssText = child.style.GetCssText()
         }
       } else if (child instanceof ListItemNode) {
         child.child.children.map((listItem: LineContent, sn: number) => {
           const liChild = listItem.child
           if (liChild instanceof TextNode) {
             const liEle = document.createElement(liChild.tag)
+            SetHyperLinkAttribute(liEle, liChild?.href)
             liEle.id = GetNodeId(l, n, sn)
             liEle.innerHTML = SetInnerHTML(liChild, l, n, sn)
             if (liChild.style !== undefined) {
-              liEle.style.cssText = liChild.style.GetStyle()
+              liEle.style.cssText = liChild.style.GetCssText()
             }
             cEle.appendChild(liEle)
           }
         })
+      } else if (child instanceof EmbedNode) {
+        // @ts-ignore
+        cEle.src = child.src
+        // @ts-ignore
+        cEle.type = child.type
+        cEle.style.cssText = child.style.GetCssText()
       }
       newLine.appendChild(cEle)
     })
@@ -1715,18 +2039,19 @@ export const InitEditor = (
     el.className = 'content hide-outline'
     el.id = 'content'
     el.contentEditable = 'true'
+    el.spellcheck = false
     el.addEventListener('blur', () => {
       editor.Update(el)
+      editor.InitTextNodeState()
     })
     el.addEventListener('dragend', () => {
       editor.Update(el)
     })
-    el.addEventListener('mouseup', () => {
+    el.addEventListener('mouseup', (e) => {
       const select = new Selection()
-      if (select.isSelection()) {
-        GetTextNodeState(editor, select)
-        GetListState(editor, select)
-      }
+      GetTextNodeState(editor, select)
+      GetListState(editor, select)
+      GetLineStyle(editor, select)
     })
     editor.InitTextNodeState()
     editor.InitListState()

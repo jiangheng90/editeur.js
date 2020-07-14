@@ -8,7 +8,7 @@
 // import * as Cursor from '@/utils/Cursor'
 // import { ListItemNode } from './ListItemNode'
 import { ContentsNode } from '../nodes/ContentsNode'
-import { LineNode } from '../nodes/LineNode'
+import { LineNode, LineStyle } from '../nodes/LineNode'
 import { TextNode } from '../nodes/TextNode'
 import { ListItemNode } from '../nodes/ListItemNode'
 import * as DOM from './DocumentInterface'
@@ -100,6 +100,9 @@ export const RenderTextNodeModel = (
   if (DOM.HasStyle(text)) {
     textNode.style = DOM.GetStyle(text)
   }
+  if (DOM.HasHerf(text)) {
+    textNode.href = text.href
+  }
   return textNode
 }
 
@@ -124,9 +127,12 @@ export const RenderModel = (el: HTMLElement) => {
   ) => {
     const lineNode = new LineNode()
     line.id = DOM.GetLineId(l)
+    const align = line.style.textAlign
+    lineNode.style = new LineStyle()
+    lineNode.style.SetTextAlign(align)
     const ltName = line.tagName.toLowerCase()
     lineNode.tag = ltName
-    if (ltName === 'p') {
+    if (ltName === 'p' || ltName === 'div') {
       line.childNodes.forEach((
         text: any,
         n: number

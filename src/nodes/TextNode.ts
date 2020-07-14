@@ -1,13 +1,13 @@
 // import { TextNodeInterface, TextNodeStyleInterface } from '@/components/editor/types/TextNode'
-import { TextNodeInterface, TextNodeStyleInterface } from '../types/TextNode'
+import { TextNodeInterface, TextNodeStyleInterface, HyperLinkPropInterface } from '../types/TextNode'
 
 export class TextNodeStyle implements TextNodeStyleInterface {
   public fontSize?: string
   public fontWeight?: number
   public color?: string
-  public font?: string
+  public fontFamily?: string
   public backgroundColor?: string
-  constructor (fontSize?: string, color?: string, fontWeight?: number, font?: string, backgroundColor?: string) {
+  constructor (fontSize?: string, color?: string, fontWeight?: number, fontFamily?: string, backgroundColor?: string) {
     if (fontSize) {
       this.fontSize = fontSize
     }
@@ -17,30 +17,30 @@ export class TextNodeStyle implements TextNodeStyleInterface {
     if (color) {
       this.color = color
     }
-    if (font) {
-      this.font = font
+    if (fontFamily) {
+      this.fontFamily = fontFamily
     }
     if (backgroundColor) {
       this.backgroundColor = backgroundColor
     }
   }
 
-  public GetStyle () {
+  public GetCssText () {
     let style = ''
     if (this.fontSize) {
-      style += 'font-size:' + this.fontSize
+      style += 'font-size:' + this.fontSize + ';'
     }
     if (this.fontWeight) {
-      style += ';font-weight:' + this.fontWeight
+      style += 'font-weight:' + this.fontWeight + ';'
     }
     if (this.color) {
-      style += ';color:' + this.color
+      style += 'color:' + this.color + ';'
     }
-    if (this.font) {
-      style += ';font:' + this.font
+    if (this.fontFamily) {
+      style += 'font-family:' + this.fontFamily + ';'
     }
     if (this.backgroundColor) {
-      style += ';background-color:' + this.backgroundColor
+      style += 'background-color:' + this.backgroundColor + ';'
     }
     if (style !== '') {
       return style
@@ -68,6 +68,7 @@ export class TextNode implements TextNodeInterface {
   public delete: boolean
   public underScore: boolean
   public style?: TextNodeStyle
+  public href?: string
   constructor (tag: string, value?: string, style?: TextNodeStyle) {
     this.tag = tag
     this.value = value
@@ -76,5 +77,19 @@ export class TextNode implements TextNodeInterface {
     this.italic = false
     this.delete = false
     this.underScore = false
+  }
+}
+
+export class HyperLinkProp implements HyperLinkPropInterface {
+  label: string
+  href: string
+
+  constructor (href: string, label?: string) {
+    this.href = href
+    if (label !== undefined) {
+      this.label = label
+    } else {
+      this.label = href
+    }
   }
 }

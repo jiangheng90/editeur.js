@@ -22,3 +22,8 @@ export interface TextNodeStateInterface {
   s: boolean
   u: boolean
 }
+
+export interface HyperLinkPropInterface {
+  label: string,
+  href: string
+}

@@ -1,5 +1,5 @@
 .toolbar {
-  text-align: left;
+  text-align: center;
   width: 100%;
   margin: 0 0 20px 0;
 }
@@ -9,5 +9,9 @@
   background-color: white;
   border: none;
   outline: none;
+  cursor: Pointer;
+}
+
+.state-icon {
   cursor: Pointer;
 }

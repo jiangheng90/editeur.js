@@ -1,10 +1,20 @@
 <!DOCTYPE html>
 <head>
-  <script src="../dist/main.js"></script>
-  <link rel="stylesheet" href="./test.css" type="text/css">
+  <script src="../dist/editeur.js"></script>
+  <link rel="stylesheet" href="./entry.css" type="text/css">
+  <link rel="stylesheet" href="./icon.css" type="text/css">
 </head>
 <body>
   <div class="toolbar">
+    <label>
+      字体
+      <select id="font-family-selector" onchange="selectFontFamily(this.options[this.options.selectedIndex].value)">
+        <option  value="'Courier New', Courier, monospace">Courier New</option>
+        <option  value="'Times New Roman', Times, serif">Times New Roman</option>
+        <option  value="'Lucida Sans', 'Lucida Sans Regular'">Lucida Sans</option>
+        <option  value="Verdana, Geneva, Tahoma, sans-serif">Verdana</option>
+      </select>
+    </label>
     <label>
       字号
       <select id="font-size-selector" onchange="selectFontSize(this.options[this.options.selectedIndex].value)">
@@ -102,11 +112,32 @@
         </option>
       </select>
     </label>
+    <button class="state-button" onclick="setAlign('left')">
+      <i class="iconfont icon-LeftAlign state-icon"></i>
+    </button>
+    <button onclick="setAlign('center')" class="state-button">
+      <i class="iconfont icon-CenterAlign state-icon"></i>
+    </button>
+    <button class="state-button" onclick="setAlign('right')">
+      <i class="iconfont icon-RightAlign state-icon"></i>
+    </button>
+    <button class="state-button" onclick="setHyperLink('baidu', 'http://www.baidu.com')">
+      hyperlink
+    </button>
+    <button class="state-button" onclick="insertImage()">
+      embed
+    </button>
+    <button class="state-button" onclick="setQuote()">
+      quote
+    </button>
+    <button class="state-button" onclick="setH2()">
+      h2
+    </button>
   </div>
-  <div class="content" id="content1" onblur="">123</div>
+  <div class="content" id="content">123</div>
 </body>
 <script>
-  const target = document.getElementById('content1')
+  const target = document.getElementById('content')
   // editeur.addChild(target)
   // // editeur.addChild(target)
   const style1 = new editeur.TextNodeStyle()
@@ -145,6 +176,7 @@
   const line2 = new editeur.LineNode()
   line2.PushChildren([l2n0, l2n1, l2n2, l2n4])
 
+
   const l3n0 = new editeur.TextNode('span', '66666666666')
   const line3 = new editeur.LineNode()
   line3.PushChild(l3n0)
@@ -159,7 +191,11 @@
 
   const li2n0 = new editeur.TextNode('span', '项目3')
   const li2 = new editeur.LineNode('p')
+  const li2n1 = new editeur.TextNode('a', 'baidu')
+  li2n1.italic = true
+  li2n1.href = 'http://www.baidu.com'
   li2.PushChild(li2n0)
+  li2.PushChild(li2n1)
 
   const li0c = new editeur.ListItemNode(li0)
   const li1c = new editeur.ListItemNode(li1)
@@ -168,13 +204,21 @@
   const line4 = new editeur.LineNode('ul')
   line4.PushChildren([li0c, li1c, li2c])
 
+
+  const l5n0 = new editeur.TextNode('a', 'baidu')
+  l5n0.italic = true
+  l5n0.href = 'http://www.baidu.com'
+  const line5 = new editeur.LineNode('p')
+  line5.PushChild(l5n0)
+
   let content = new editeur.ContentsNode()
-  content.PushChildren([line0, line4, line1, line2, line3])
+  content.PushChildren([line0, line4, line1, line2, line3, line5])
   const lin1FirstChild = content.children[0].children[0].child
   const lin1MidChild = content.children[0].children[1].child
   if (lin1FirstChild && lin1FirstChild instanceof editeur.TextNode) {
     lin1FirstChild.style = style1
   }
+  
   if (lin1MidChild && lin1MidChild instanceof editeur.TextNode) {
     lin1MidChild.style = style2
   }
@@ -187,23 +231,16 @@
     const del = document.getElementById('delete')
     const underScore = document.getElementById('underScore')
     if (bold && italic && del && underScore) {
-      if (new editeur.Selection().isSelection()) {
-        bold.style.color = editor.textState.strong ? 'rgb(0, 0, 0)' : 'rgb(0, 0, 255)'
-        italic.style.color = editor.textState.em ? 'rgb(0, 0, 0)' : 'rgb(0, 0, 255)'
-        del.style.color = editor.textState.s ? 'rgb(0, 0, 0)' : 'rgb(0, 0, 255)'
-        underScore.style.color = editor.textState.u ? 'rgb(0, 0, 0)' : 'rgb(0, 0, 255)'
-      } else {
-        bold.style.color = 'rgb(0, 0, 0)'
-        italic.style.color = 'rgb(0, 0, 0)'
-        del.style.color = 'rgb(0, 0, 0)'
-        underScore.style.color = 'rgb(0, 0, 0)'
-      }
+      bold.style.color = editor.textState.strong ? 'rgb(0, 0, 0)' : 'rgb(0, 0, 255)'
+      italic.style.color = editor.textState.em ? 'rgb(0, 0, 0)' : 'rgb(0, 0, 255)'
+      del.style.color = editor.textState.s ? 'rgb(0, 0, 0)' : 'rgb(0, 0, 255)'
+      underScore.style.color = editor.textState.u ? 'rgb(0, 0, 0)' : 'rgb(0, 0, 255)'
     }
   })
 
-  window.addEventListener('blur', () => {
-    console.log('blur')
-  })
+  function selectFontFamily (val) {
+    editor.SetFontFamily(val)
+  }
 
   function selectFontSize (val) {
     editor.SetFontSize(val, 1)
@@ -293,5 +330,40 @@
       }
     }
     editor.SetList(param)
+  }
+
+  function setAlign (val) {
+    const align = new editeur.LineStyle()
+    align.SetTextAlign(val)
+    editor.SetAlign(align)
+  }
+
+  function setHyperLink (label, href) {
+    editor.SetHyperLink(href, label)
+  }
+
+  function setQuote () {
+    const style = new editeur.LineStyle()
+    style.borderLeft = '5px solid #f0f0f0'
+    style.color = '#a5a5a5'
+    style.padding = '10px 0 10px 15px'
+    const formate = new editeur.LineFormate('div')
+    formate.style = style
+    editor.SetLineStyle(formate)
+  }
+
+  function setH2 () {
+    const style = new editeur.LineStyle()
+    style.fontSize = '20pt'
+    style.lineHeight = '40px'
+    style.fontWeight = '700'
+    editor.SetLineStyle(style)
+  }
+
+  function insertImage () {
+    const embed = new editeur.EmbedNode()
+    embed.src = 'https://www.runoob.com/try/demo_source/movie.mp4'
+    embed.type = 'video/mp4'
+    editor.InsertEmbedElement(embed)
   }
 </script>

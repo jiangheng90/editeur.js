@@ -14,8 +14,8 @@ export const StyleCopy = (nodeStyle: TextNodeStyle): TextNodeStyle => {
   if (nodeStyle.color) {
     target.color = nodeStyle.color
   }
-  if (nodeStyle.font) {
-    target.font = nodeStyle.font
+  if (nodeStyle.fontFamily) {
+    target.fontFamily = nodeStyle.fontFamily
   }
   return target
 }

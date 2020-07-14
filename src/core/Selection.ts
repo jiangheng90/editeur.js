@@ -52,7 +52,7 @@ const InitSelectionNode = (
       const t = node.childNodes[offset]
       if (t) {
         let id = t.id
-        console.log(id)
+        // console.log(id)
         if (id !== undefined) {
           if (DOM.IsNodeIdValid(id)) {
             return new SelectionNode(id, 0)
@@ -154,7 +154,7 @@ export class Selection implements SelectionInterface {
     }
   }
 
-  private static GetPosition (sn: SelectionNode): any {
+  public static GetPosition (sn: SelectionNode): any {
     const l = sn.lineIndex
     const n = sn.nodeIndex
     const subN = sn.subNodeIndex
@@ -286,6 +286,21 @@ export const SetSelection = (
     range.setEnd(end, end.length)
     const select = window.getSelection()
     if (select) {
+      select.removeAllRanges()
+      select.addRange(range)
+    }
+  }
+}
+
+export const SetCursorPosition = (
+  ele: HTMLElement
+): any => {
+  if (ele) {
+    const range = document.createRange()
+    const select = window.getSelection()
+    if (select) {
+      range.selectNode(ele)
+      range.collapse(false)
       select.removeAllRanges()
       select.addRange(range)
     }

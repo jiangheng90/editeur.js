@@ -1,5 +1,5 @@
-import { TextNodeStyle, TextNode } from "../nodes/TextNode"
-import { LineNode } from "../nodes/LineNode"
+import { TextNodeStyle, TextNode, HyperLinkProp } from "../nodes/TextNode"
+import { LineNode, LineStyle, LineFormate } from "../nodes/LineNode"
 import { ListItemNode } from "../nodes/ListItemNode"
 import { ContentsNode } from "../nodes/ContentsNode"
 import * as DOM from "../core/DocumentInterface"
@@ -7,11 +7,13 @@ import * as Model from "../core/Model"
 import { TextNodeStateInterface } from "../types/TextNode"
 import { ListStateInterface } from "../types/ListItemNode"
 import { Selection } from "./Selection"
+import { EmbedNode } from "../nodes/EmbedNode"
 
 export class Editor {
   public VirtualDom: ContentsNode
   public textState: TextNodeStateInterface
   public listState: ListStateInterface
+  public lineStyle: LineStyle
   public el: HTMLElement
   constructor(el: HTMLElement, content?: ContentsNode) {
     DOM.InitEditor(el, this)
@@ -31,8 +33,7 @@ export class Editor {
     this.VirtualDom = Model.RenderModel(el)
   }
 
-  public InitTextNodeState = (
-  ): any => {
+  public InitTextNodeState = (): any => {
     this.textState = {
       strong: true,
       em: true,
@@ -45,6 +46,24 @@ export class Editor {
     this.listState = {
       list: true
     }
+  }
+
+  public SetTextStyle (
+    val: TextNodeStyle
+  ): any {
+    const select = new Selection()
+    const textStyle = val
+    DOM.UpdateTextDOM(this, select, textStyle)
+  }
+
+  public SetFontFamily (
+    val: string
+  ): any {
+    const select = new Selection()
+    const textStyle = new TextNodeStyle()
+    const fontFamily = val
+    textStyle.fontFamily = fontFamily
+    DOM.UpdateTextDOM(this, select, textStyle)
   }
 
   public SetFontSize (
@@ -88,6 +107,11 @@ export class Editor {
     // console.log(new Selection())
   }
 
+  public InsertEmbedElement (val: EmbedNode) {
+    const select = new Selection()
+    DOM.UpdateTextDOM(this, select, val)
+  }
+
   public SetBold () {
     const select = new Selection()
     const bold = 'strong'
@@ -120,10 +144,38 @@ export class Editor {
     // console.log(new Selection())
   }
 
+  public SetHyperLink (
+    href: string,
+    label?: string
+  ) {
+    const select = new Selection()
+    let param: HyperLinkProp
+    if (label !== undefined) {
+      param = new HyperLinkProp(href, label)
+    } else {
+      param = new HyperLinkProp(href)
+    }
+    DOM.UpdateTextDOM(this, select, param)
+  }
+
   public SetList (
     param: ListStateInterface
   ) {
     const select = new Selection()
     DOM.UpdateListDOM(this, select, param)
+  }
+
+  public SetAlign (
+    val: LineStyle
+  ): any {
+    const select = new Selection()
+    DOM.UpdateLineDOM(this, select, val)
+  }
+
+  public SetLineStyle (
+    val: LineStyle|LineFormate
+  ): any {
+    const select = new Selection()
+    DOM.UpdateLineDOM(this, select, val)
   }
 }
