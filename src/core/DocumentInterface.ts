@@ -1004,11 +1004,14 @@ export const UpdateTextDOM = (
       }
     }
   } else {
-    const l = select.anchor.lineIndex
-    const n = select.anchor.nodeIndex
-    const sn = select.anchor.subNodeIndex
-    const o = select.anchor.offset
-    const p = Selection.GetPosition(select.anchor)
+    const l = select?.anchor?.lineIndex
+    const n = select?.anchor?.nodeIndex
+    const sn = select?.anchor?.subNodeIndex
+    const o = select?.anchor?.offset
+    let p
+    if (select.anchor) {
+      p = Selection.GetPosition(select.anchor)
+    }
     if (l !== undefined &&
       n !== undefined &&
       o !== undefined &&
