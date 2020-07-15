@@ -2036,7 +2036,8 @@ export const InitEditor = (
   editor: Editor
 ) => {
   if (el !== undefined) {
-    el.className = 'content hide-outline'
+    el.classList.add('content')
+    el.classList.add('hide-outline')
     el.id = 'content'
     el.contentEditable = 'true'
     el.spellcheck = false
