@@ -117,6 +117,7 @@ export class Editor {
     const bold = 'strong'
     // console.log(select)
     DOM.UpdateTextDOM(this, select, bold)
+    DOM.GetTextNodeState(this, select)
     // console.log(new Selection())
   }
 
@@ -125,6 +126,7 @@ export class Editor {
     const italic = 'em'
     // console.log(select)
     DOM.UpdateTextDOM(this, select, italic)
+    DOM.GetTextNodeState(this, select)
     // console.log(new Selection())
   }
 
@@ -133,6 +135,7 @@ export class Editor {
     const del = 's'
     // console.log(select)
     DOM.UpdateTextDOM(this, select, del)
+    DOM.GetTextNodeState(this, select)
     // console.log(new Selection())
   }
   
@@ -141,6 +144,7 @@ export class Editor {
     const underScore = 'u'
     // console.log(select)
     DOM.UpdateTextDOM(this, select, underScore)
+    DOM.GetTextNodeState(this, select)
     // console.log(new Selection())
   }
 
