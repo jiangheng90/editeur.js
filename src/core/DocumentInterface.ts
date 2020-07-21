@@ -616,6 +616,8 @@ export const UpdateTextNode = (
         }
       }
       if (Object.prototype.hasOwnProperty.call(editor.textState, param)) {
+        const select = new Selection()
+        GetTextNodeState(editor, select)
         // @ts-ignore
         SetNodeTag(parentEle, targetEle, param, editor.textState[param], style)
         setTimeout(() => {
@@ -659,7 +661,7 @@ export const UpdateTextDOM = (
       // console.log('s', sl, sn, ssn, so, sp)
       // console.log('e', el, en, esn, eo, ep)
       if (sl !== el) {
-        console.log('diff-line')
+        // console.log('diff-line')
         let scn: number
         let ecn: number
         if (sp === Position.InNode) {
@@ -791,7 +793,7 @@ export const UpdateTextDOM = (
           }
         }, 0)
       } else {
-        console.log('same-line-diff-node')
+        // console.log('same-line-diff-node')
         // console.log('e', el, en, esn)
         if (sn !== en) {
           let scn: number, ecn: number
@@ -883,7 +885,7 @@ export const UpdateTextDOM = (
             }
           }, 0);
         } else {
-          console.log('same-line-same-node')
+          // console.log('same-line-same-node')
           let scn: number, ecn: number
           if (sp === Position.InNode &&
             ep === Position.InNode

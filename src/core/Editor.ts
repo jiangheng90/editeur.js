@@ -107,52 +107,45 @@ export class Editor {
     // console.log(new Selection())
   }
 
-  public InsertEmbedElement (val: EmbedNode) {
-    const select = new Selection()
+  public InsertEmbedElement (
+    val: EmbedNode,
+    select: Selection
+  ) {
     DOM.UpdateTextDOM(this, select, val)
   }
 
   public SetBold () {
-    const select = new Selection()
+    let select = new Selection()
     const bold = 'strong'
-    // console.log(select)
     DOM.UpdateTextDOM(this, select, bold)
-    DOM.GetTextNodeState(this, select)
-    // console.log(new Selection())
   }
 
   public SetItalic () {
-    const select = new Selection()
+    let select = new Selection()
     const italic = 'em'
     // console.log(select)
     DOM.UpdateTextDOM(this, select, italic)
-    DOM.GetTextNodeState(this, select)
-    // console.log(new Selection())
   }
 
   public SetDelete () {
-    const select = new Selection()
+    let select = new Selection()
     const del = 's'
     // console.log(select)
     DOM.UpdateTextDOM(this, select, del)
-    DOM.GetTextNodeState(this, select)
-    // console.log(new Selection())
   }
   
   public SetUnderScore () {
-    const select = new Selection()
+    let select = new Selection()
     const underScore = 'u'
     // console.log(select)
     DOM.UpdateTextDOM(this, select, underScore)
-    DOM.GetTextNodeState(this, select)
-    // console.log(new Selection())
   }
 
   public SetHyperLink (
     href: string,
+    select: Selection,
     label?: string
   ) {
-    const select = new Selection()
     let param: HyperLinkProp
     if (label !== undefined) {
       param = new HyperLinkProp(href, label)

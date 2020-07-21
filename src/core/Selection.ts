@@ -108,8 +108,18 @@ export class Selection implements SelectionInterface {
   }
 
   public isSelection (): boolean {
-    return !(this.select?.anchorNode === this.select?.focusNode &&
-      this.select?.anchorOffset === this.select?.focusOffset)
+    // return !(this.select?.anchorNode === this.select?.focusNode &&
+    //   this.select?.anchorOffset === this.select?.focusOffset)
+    if (this.anchor && this.focus) {
+      return !(this.anchor.lineIndex === this.focus.lineIndex && 
+        this.anchor.nodeIndex === this.focus.nodeIndex &&
+        this.anchor.offset === this.focus.offset && 
+        this.anchor.subNodeIndex === this.focus.subNodeIndex)
+    } else if (this.anchor === undefined && this.focus === undefined) {
+      return false
+    } else {
+      return true
+    }
   }
 
   private SortNodes (): any {
@@ -293,6 +303,10 @@ export const SetSelection = (
     if (select) {
       select.removeAllRanges()
       select.addRange(range)
+      setTimeout(() => {
+        const select = new Selection()
+        DOM.GetTextNodeState(editor, select)
+      }, 0);
     }
   }
 }

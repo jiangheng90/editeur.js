@@ -112,7 +112,8 @@ export const InitModel = (
   if (c === undefined) {
     c = new ContentsNode()
     const newLine = new LineNode()
-    const node = new TextNode('br')
+    const node = new TextNode('span')
+    node.value = '&nbsp'
     newLine.PushChild(node)
     c.PushChild(newLine)
   }

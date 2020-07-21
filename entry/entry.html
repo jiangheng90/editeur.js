@@ -339,7 +339,8 @@
   }
 
   function setHyperLink (label, href) {
-    editor.SetHyperLink(href, label)
+    const select = new editeur.Selection()
+    editor.SetHyperLink(href, select)
   }
 
   function setQuote () {
