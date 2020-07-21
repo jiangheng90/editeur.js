@@ -33,7 +33,7 @@
   </a>
 </p>
 
-### Editeur is a rich text editor. It is build just for improving my coding skill. At begining I want to design it as a mvvm component in vue.js framwork, but when I working on it, I found many of my idea was very hard to fullfill. When I finish it I found it is no different from WYSIWYG Editor such as Quill or TinyMCE. Some of its methods such as the update document function has may problems, it may be rewrited later. I think as a tool it is far from being available to use for most users.
+Editeur is a rich text editor. It is build just for improving my coding skill. At begining I want to design it as a mvvm component in vue.js framwork, but when I working on it, I found many of my idea was very hard to fullfill. When I finish it I found it is no different from WYSIWYG Editor such as Quill or TinyMCE. Some of its methods such as the update document function has may problems, it may be rewrited later. I think as a tool it is far from being available to use for most users.
 
 ## CDN
 import in html
