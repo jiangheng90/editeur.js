@@ -5,11 +5,11 @@
   <a href="https://github.com/jiangheng90/editeur.js">A Simple Rich Text Editor</a>
 </h3>
 <p align="center">
-  <a title="CDN"><strong>CDN</strong></a>
+  <a title="CDN" href="#cdn"><strong>CDN</strong></a>
   &#x2022;
-  <a title="Module"><strong>Module</strong></a>
+  <a title="Module" href="#module"><strong>Module</strong></a>
   &#x2022;
-  <a title="Usage Sample"><strong>Usage Sample</strong></a>
+  <a title="Usage" href="#usage"><strong>Usage</strong></a>
 </p>
 <p align="center">
   <a href="https://npmjs.com/package/editeurjs" title="Version">
@@ -64,6 +64,7 @@ import { Editor } from 'editeurjs;
 const ele = document.getElementById('content');
 const editor = new Editor(ele);
 ```
+it also support es5 commonjs module import
 
-## Usage Sample
-I have write a example of the usage. most function can be found. If you want to import it into a mvvm framework such as vue, you can see <a>this</a>
+## Usage
+I have write a example of the usage. most function can be found. If you want to import it into a mvvm framework such as vue, you can see <a href="https://github.com/jiangheng90/editeur-vue">this</a>
