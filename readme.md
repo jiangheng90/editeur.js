@@ -10,8 +10,6 @@
   <a title="Module"><strong>Module</strong></a>
   &#x2022;
   <a title="Usage Sample"><strong>Usage Sample</strong></a>
-  &#x2022;
-  <a title="Note"><strong>Note</strong></a>
 </p>
 <p align="center">
   <a href="https://npmjs.com/package/editeurjs" title="Version">
@@ -20,7 +18,7 @@
   <a href="https://npmjs.com/package/editeurjs" title="Downloads">
     <img src="https://img.shields.io/npm/dm/editeurjs.svg" alt="Downloads">
   </a>
-    <a href="https://npmjs.com/package/editeurjs" title="License">
+    <a href="https://www.mit-license.org/" title="License">
     <img src="https://img.shields.io/npm/l/editeurjs.svg" alt="License">
   </a>
   </a>
@@ -33,7 +31,7 @@
   </a>
 </p>
 
-Editeur is a rich text editor. It is build just for improving my coding skill. At begining I want to design it as a mvvm component in vue.js framwork, but when I working on it, I found many of my idea was very hard to fullfill. When I finish it I found it is no different from WYSIWYG Editor such as Quill or TinyMCE. Some of its methods such as the update document function has may problems, it may be rewrited later. I think as a tool it is far from being available to use for most users.
+   Editeur is a rich text editor. It was designed as a component in vue.js and must be work on it. But during development, some  solution in it was fialed, so it was no need to be design like that, and I changed it into js module, and the package type is umd.there is no different in document operation from WYSIWYG Editor such as Quill or TinyMCE. But Some methods has may problems and not efficient, it may be changed later maybe. For now, I think as a tool it is far from being available for production. it just for reference only.
 
 ## CDN
 import in html
@@ -67,11 +65,5 @@ const ele = document.getElementById('content');
 const editor = new Editor(ele);
 ```
 
-## API Reference
-// In Editor class
-
-|Methods|Instruction|Prams|
-|----|----|----|
-|SetFontSize|Set Font Size. You can use it to set font size in 'px' 'pt' '%' the other way to set font size is placed in SetFontStyle|size(string/number) type(string/number && option)|
-|SetFontColor|Set Font Color. You can use it to set font color in rgba or Hexadecimal or other ways, just as what you can set in stylesheet|color (string)|
-|
+## Usage Sample
+I have write a example of the usage. most function can be found. If you want to import it into a mvvm framework such as vue, you can see <a>this</a>

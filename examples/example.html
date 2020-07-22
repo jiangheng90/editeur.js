@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
   <script src="../dist/editeur.js"></script>
-  <link rel="stylesheet" href="./entry.css" type="text/css">
+  <link rel="stylesheet" href="./example.css" type="text/css">
   <link rel="stylesheet" href="./icon.css" type="text/css">
 </head>
 <body>
@@ -138,90 +138,6 @@
 </body>
 <script>
   const target = document.getElementById('content')
-  // editeur.addChild(target)
-  // // editeur.addChild(target)
-  const style1 = new editeur.TextNodeStyle()
-  style1.color = '#ff0000'
-  const style2 = new editeur.TextNodeStyle()
-  style2.fontSize = '22pt'
-  style2.backgroundColor = '#a6a6a6'
-  const l0n0 = new editeur.TextNode('span', '这是一段测试文本')
-  const l0n1 = new editeur.TextNode('span', '222222222222')
-  const l0n2 = new editeur.TextNode('span', '3333333333333333333333333')
-  const line0 = new editeur.LineNode()
-  line0.PushChildren([l0n0, l0n1, l0n2])
-  // this.contents.PushChild(line0)
-  // line0.PushChildren([l0n0, l0n1, l0n2])
-
-  const l1n0 = new editeur.TextNode('span', '44444444444444444444444444')
-  const l1n1 = new editeur.TextNode('span', '55555555555555555555555555')
-  const l1n2 = new editeur.TextNode('span', '66666666666666666666666666')
-  const line1 = new editeur.LineNode()
-  line1.PushChildren([l1n0, l1n1, l1n2])
-
-  const l2n0 = new editeur.TextNode('span', '8888888')
-  const l2n1 = new editeur.TextNode('em', '9999999999999')
-  l2n1.bold = false
-  l2n1.italic = true
-  l2n1.underScore = true
-  l2n1.delete = true
-  l2n1.style = style2
-  const l2n2 = new editeur.TextNode('em', '000000000')
-  l2n2.bold = false
-  l2n2.italic = true
-  l2n2.underScore = true
-  l2n2.delete = true
-  l2n2.style = style2
-  const l2n4 = new editeur.TextNode('span', '222')
-  const line2 = new editeur.LineNode()
-  line2.PushChildren([l2n0, l2n1, l2n2, l2n4])
-
-
-  const l3n0 = new editeur.TextNode('span', '66666666666')
-  const line3 = new editeur.LineNode()
-  line3.PushChild(l3n0)
-
-  const li0n0 = new editeur.TextNode('span', '项目1')
-  const li0 = new editeur.LineNode('p')
-  li0.PushChild(li0n0)
-
-  const li1n0 = new editeur.TextNode('span', '项目2')
-  const li1 = new editeur.LineNode('p')
-  li1.PushChild(li1n0)
-
-  const li2n0 = new editeur.TextNode('span', '项目3')
-  const li2 = new editeur.LineNode('p')
-  const li2n1 = new editeur.TextNode('a', 'baidu')
-  li2n1.italic = true
-  li2n1.href = 'http://www.baidu.com'
-  li2.PushChild(li2n0)
-  li2.PushChild(li2n1)
-
-  const li0c = new editeur.ListItemNode(li0)
-  const li1c = new editeur.ListItemNode(li1)
-  const li2c = new editeur.ListItemNode(li2)
-
-  const line4 = new editeur.LineNode('ul')
-  line4.PushChildren([li0c, li1c, li2c])
-
-
-  const l5n0 = new editeur.TextNode('a', 'baidu')
-  l5n0.italic = true
-  l5n0.href = 'http://www.baidu.com'
-  const line5 = new editeur.LineNode('p')
-  line5.PushChild(l5n0)
-
-  let content = new editeur.ContentsNode()
-  content.PushChildren([line0, line4, line1, line2, line3, line5])
-  const lin1FirstChild = content.children[0].children[0].child
-  const lin1MidChild = content.children[0].children[1].child
-  if (lin1FirstChild && lin1FirstChild instanceof editeur.TextNode) {
-    lin1FirstChild.style = style1
-  }
-  
-  if (lin1MidChild && lin1MidChild instanceof editeur.TextNode) {
-    lin1MidChild.style = style2
-  }
 
   const editor = new editeur.Editor(target)
 
